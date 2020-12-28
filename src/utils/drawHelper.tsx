@@ -714,21 +714,21 @@ export function getPolygon(mbPoints: TPoint[][], xlPoints: TPoint[][]) {
             return polygonArray;
         }
         for (let j = 0; j < mbArray.length; j++) {
-            let curMbX = getParseFloat(mbArray[j].x, 4);
-            let curMbY = getParseFloat(mbArray[j].y, 4);
+            let curMbX = mbArray[j].x;
+            let curMbY = mbArray[j].y;
             if (mbArray[j + 1] !== undefined) {
-                let nextMbX = getParseFloat(mbArray[j + 1].x, 4);
-                let nextMbY = getParseFloat(mbArray[j + 1].y, 4);
-                let line1 = lineX({ "x": curMbX, "y": curMbY }, { "x": nextMbX, "y": nextMbY });
+                let nextMbX = mbArray[j + 1].x;
+                let nextMbY = mbArray[j + 1].y;
+                let mbLine = lineX({ "x": curMbX, "y": curMbY }, { "x": nextMbX, "y": nextMbY });
                 for (let h = 0; h < xlArray.length; h++) {
-                    let curXlX = getParseFloat(xlArray[h].x, 4);
-                    let curXlY = getParseFloat(xlArray[h].y, 4);
+                    let curXlX = xlArray[h].x;
+                    let curXlY = xlArray[h].y;
                     if (xlArray[h + 1] !== undefined) {
-                        let nextXlX = getParseFloat(xlArray[h + 1].x, 4);
-                        let nextXlY = getParseFloat(xlArray[h + 1].y, 4);
-                        let line2 = lineX({ "x": curXlX, "y": curXlY }, { "x": nextXlX, "y": nextXlY });
-                        let interX = segmentsIntr(line1, line2).x;
-                        let interY = segmentsIntr(line1, line2).y;
+                        let nextXlX = xlArray[h + 1].x;
+                        let nextXlY = xlArray[h + 1].y;
+                        let xlLine = lineX({ "x": curXlX, "y": curXlY }, { "x": nextXlX, "y": nextXlY });
+                        let interX = segmentsIntr(mbLine, xlLine).x;
+                        let interY = segmentsIntr(mbLine, xlLine).y;
                         //交点在心率线段上
                         if (h === xlArray.length - 2 && j === xlArray.length - 2) {
                             //console.log(segmentsIntr(line1,line2))
@@ -736,14 +736,16 @@ export function getPolygon(mbPoints: TPoint[][], xlPoints: TPoint[][]) {
                         let xlBool = interX >= curXlX && interX <= nextXlX && (interY >= curXlY && interY <= nextXlY || interY <= curXlY && interY >= nextXlY);
                         //交点在脉搏线段上
                         let mbBool = interX >= curMbX && interX <= nextMbX && (interY >= curMbY && interY <= nextMbY || interY <= curMbY && interY >= nextMbY);
+                        console.log('ggoo', curMbX, curMbY, nextMbX, nextMbY, curXlX, curXlY, nextXlX, nextXlY, xlBool, mbBool)
                         if (xlBool && mbBool) {
-                            intersectionArray[i].push(segmentsIntr(line1, line2));
+                            intersectionArray[i].push(segmentsIntr(mbLine, xlLine));
                         }
                     }
                 }
             }
         }
     }
+    console.log('ggoox',intersectionArray)
     //根据交点计算多边形
     for (let i = 0; i < intersectionArray.length; i++) {
         let interArray = intersectionArray[i];
@@ -773,10 +775,11 @@ export function getPolygon(mbPoints: TPoint[][], xlPoints: TPoint[][]) {
                     }
                 }
             }
+            console.log('isMore',isMore)
             if (isMore) { //存在脉搏短促
                 let newXlpoint = xlPoint;
                 let newMbpoint = mbPoint;
-                let newPoint;
+                let newPoint:TPoint[];
                 newXlpoint.reverse();
                 newPoint = newMbpoint.concat(newXlpoint);
                 newPoint.push(newMbpoint[0]);
@@ -1190,7 +1193,12 @@ function segmentsIntr(line1: any, line2: any) {
     }
 }
 
-function lineX(point1: any, point2: any) {
+type TLinepoint = {
+    a?: number
+    b?: number
+    x?: number
+}
+function lineX(point1: TPoint, point2: TPoint): TLinepoint {
     let x1 = point1.x;
     let x2 = point2.x;
     let y1 = point1.y;

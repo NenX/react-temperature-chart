@@ -1,10 +1,10 @@
 {
-  "name": "react-temp-chart",
-  "version": "1.0.0",
+  "name": "react-temperature-chart",
+  "version": "1.0.1",
   "description": "react component",
   "author": "NenX",
   "license": "MIT",
-  "repository": "NenX/react-temp-chart",
+  "repository": "NenX/react-temperature-chart",
   "main": "dist/index.js",
   "module": "dist/index.modern.js",
   "source": "src/index.tsx",

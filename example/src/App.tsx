@@ -77,7 +77,7 @@ const App = () => {
         "mbValue": "",
         "phValue": "",
         "type": "",
-        "value": "80",
+        "value": "40",
         "xlValue": ""
       },
       {
